@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fitness Supplements Cart</title>
+
+  <!-- React -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!-- Babel -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .product, .cart-item {
+      background: #1e1e1e;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .product img {
+      width: 100%;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin-top: 5px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    h2 {
+      margin-top: 30px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 5px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    function ShoppingCart() {
+      const products = [
+        { id: 1, name: "Whey Protein", price: 35, img: "https://yourwhey.in/wp-content/uploads/2020/06/Whey-2kg-chocolate-front-scaled-800x800.jpg" },
+        { id: 2, name: "Creatine Monohydrate", price: 25, img: "https://yourwhey.in/wp-content/uploads/2024/09/creatine-100g-front-1024x1024.png" },
+        { id: 3, name: "BCAA", price: 30, img: "https://yourwhey.in/wp-content/uploads/2024/09/Bcaa-300g-strawberry-front.png" },
+        { id: 4, name: "Pre-Workout", price: 40, img: "https://yourwhey.in/wp-content/uploads/2024/09/creatinefront-orange-150g-800x800.png" },
+        { id: 5, name: "Mass Gainer", price: 50, img: "https://yourwhey.in/wp-content/uploads/2024/09/Mass-1kg-chocolate-front-scaled.png" },
+        { id: 6, name: "Multivitamin", price: 20, img: "https://picsum.photos/id/1050/300/300" },
+        { id: 7, name: "Omega 3", price: 18, img: "https://picsum.photos/id/1060/300/300" },
+        { id: 8, name: "Glutamine", price: 22, img: "https://picsum.photos/id/1070/300/300" },
+        { id: 9, name: "ZMA", price: 15, img: "https://picsum.photos/id/1080/300/300" },
+        { id: 10, name: "Fat Burner", price: 28, img: "https://picsum.photos/id/1020/300/300" }
+      ];
+
+      const [cart, setCart] = React.useState([]);
+
+      function addToCart(product) {
+        setCart(prev => {
+          const found = prev.find(p => p.id === product.id);
+          if (found) {
+            return prev.map(p =>
+              p.id === product.id ? { ...p, qty: p.qty + 1 } : p
+            );
+          }
+          return [...prev, { ...product, qty: 1 }];
+        });
+      }
+
+      function changeQty(id, delta) {
+        setCart(prev =>
+          prev
+            .map(item =>
+              item.id === id ? { ...item, qty: item.qty + delta } : item
+            )
+            .filter(item => item.qty > 0)
+        );
+      }
+
+      const total = cart.reduce(
+        (sum, item) => sum + item.price * item.qty,
+        0
+      );
+
+      return (
+        <div className="container">
+          <h1>Fitness Supplements Store</h1>
+
+          <h2>Products</h2>
+          <div className="products">
+            {products.map(product => (
+              <div className="product" key={product.id}>
+                <img src={product.img} alt={product.name} />
+                <strong>{product.name}</strong>
+                <p>${product.price}</p>
+                <button onClick={() => addToCart(product)}>Add to Cart</button>
+              </div>
+            ))}
+          </div>
+
+          <h2>Cart</h2>
+          {cart.length === 0 && <p>Your cart is empty</p>}
+
+          {cart.map(item => (
+            <div className="cart-item" key={item.id}>
+              <span>
+                {item.name} x {item.qty}
+              </span>
+              <div>
+                <button onClick={() => changeQty(item.id, -1)}>-</button>
+                <button onClick={() => changeQty(item.id, 1)}>+</button>
+              </div>
+            </div>
+          ))}
+
+          <h2>Total: ${total.toFixed(2)}</h2>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<ShoppingCart />);
+  </script>
+</body>
+</html>
+
